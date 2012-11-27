@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.openid4java</groupId>
     <artifactId>openid4java-parent</artifactId>
-    <version>0.9.7</version>
+    <version>0.9.7-JANRAIN.3</version>
   </parent>
   <artifactId>openid4java-server</artifactId>
   <packaging>pom</packaging>
@@ -29,10 +29,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
     </dependency>
   </dependencies>
 </project>
