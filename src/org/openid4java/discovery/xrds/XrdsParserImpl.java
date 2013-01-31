@@ -215,6 +215,7 @@ public class XrdsParserImpl implements XrdsParser
                 if (retry)
                 {
                     input = input.replaceAll("<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>", "00");
+                    System.out.println(input);
                     retry = false;
                 }
                 else
