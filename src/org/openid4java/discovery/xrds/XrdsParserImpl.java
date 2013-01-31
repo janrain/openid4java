@@ -154,7 +154,7 @@ public class XrdsParserImpl implements XrdsParser
 
     private Document parseXmlInput(String input) throws DiscoveryException
     {
-        boolean retry = true;
+        int attemptsLeft = 2;
         if (input == null)
             throw new DiscoveryException("Cannot read XML message",
                 OpenIDException.XRDS_DOWNLOAD_ERROR);
@@ -162,7 +162,7 @@ public class XrdsParserImpl implements XrdsParser
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
 
-        while(retry)
+        while(true)
         {
             try
             {
@@ -212,11 +212,12 @@ public class XrdsParserImpl implements XrdsParser
             }
             catch (SAXParseException e)
             {
-                if (retry)
+                attemptsLeft--;
+                if (attemptsLeft > 0)
                 {
                     input = input.replaceAll("<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>", "00");
-                    System.out.println(input);
-                    retry = false;
+                    if (DEBUG)
+                        _log.debug("Input: \n" + input);
                 }
                 else
                 {
@@ -239,7 +240,6 @@ public class XrdsParserImpl implements XrdsParser
                 throw new DiscoveryException(rde.getMessage());
             }
         }
-        throw new DiscoveryException("Should never happen...");
     }
 
     private void addServiceType(Map serviceTypes, Node serviceNode, String type)
