@@ -158,6 +158,17 @@ public class XrdsParserImpl implements XrdsParser
             throw new DiscoveryException("Cannot read XML message",
                 OpenIDException.XRDS_DOWNLOAD_ERROR);
 
+
+        String regex = "(?s)(.+?<Expires>\\d{4}-\\d{2}-\\d{2}T)()(\\d:\\d{2}:\\d{2}Z<\\/Expires>.+?)";
+        if (input.matches(regex))
+        {
+            input = input.replaceAll(regex, "$10$3");
+            if (DEBUG)
+            {
+                _log.debug("Invalid 'Expires' value. Correcting...");
+            }
+        }
+
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
 
