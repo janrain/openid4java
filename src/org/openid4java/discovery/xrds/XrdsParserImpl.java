@@ -158,6 +158,21 @@ public class XrdsParserImpl implements XrdsParser
             throw new DiscoveryException("Cannot read XML message",
                 OpenIDException.XRDS_DOWNLOAD_ERROR);
 
+        // this regex is to catch a problem with the Expires values returned from Netlog
+        // basically, if the hour is 0-9, Netlog will return a 1 digit hour value instead of two digits
+        // which will cause a parsing error
+        // for example, Netlog will return:      <Expires>2013-03-02T3:33:42Z</Expires>
+        // and this section will convert it to:  <Expires>2013-03-02T03:33:42Z</Expires>
+        String regex = "(?s)(.+?<Expires>\\d{4}-\\d{2}-\\d{2}T)()(\\d:\\d{2}:\\d{2}Z<\\/Expires>.+?)";
+        if (input.matches(regex))
+        {
+            if (DEBUG)
+            {
+                _log.debug("Invalid 'Expires' value. Correcting...");
+            }
+            input = input.replaceAll(regex, "$10$3");
+        }
+
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
 
