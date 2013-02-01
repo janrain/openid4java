@@ -154,94 +154,81 @@ public class XrdsParserImpl implements XrdsParser
 
     private Document parseXmlInput(String input) throws DiscoveryException
     {
-        int attemptsLeft = 2;
+
+        String regex = "<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>";
+        if (input.matches(regex))
+        {
+            input = input.replaceAll(regex, "00");
+            if (DEBUG)
+            {
+                _log.debug("Invalid 'Expires' value. Correcting...");
+            }
+        }
         if (input == null)
             throw new DiscoveryException("Cannot read XML message",
                 OpenIDException.XRDS_DOWNLOAD_ERROR);
 
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
-
-        while(true)
+        try
         {
-            try
-            {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setValidating(true);
-                dbf.setExpandEntityReferences(false);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setValidating(true);
+            dbf.setExpandEntityReferences(false);
 
-                dbf.setFeature("http://xml.org/sax/features/validation", true);
-                dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-                dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setFeature("http://xml.org/sax/features/validation", true);
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-                dbf.setAttribute(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
-                dbf.setAttribute(JAXP_SCHEMA_SOURCE, new Object[] {
-                    Discovery.class.getResourceAsStream(XRD_SCHEMA),
-                    Discovery.class.getResourceAsStream(XRDS_SCHEMA),
-                });
-                DocumentBuilder builder = dbf.newDocumentBuilder();
-                builder.setErrorHandler(new ErrorHandler() {
-                    public void error(SAXParseException exception) throws SAXException {
-                        throw exception;
-                    }
-
-                    public void fatalError(SAXParseException exception) throws SAXException {
-                        throw exception;
-                    }
-
-                    public void warning(SAXParseException exception) throws SAXException {
-                        throw exception;
-                    }
-                });
-
-                builder.setEntityResolver(new EntityResolver() {
-                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                        throw new RuntimeDiscoveryException("External entity found in XRDS data");
-                    }
-                });
-
-                return builder.parse(new ByteArrayInputStream(input.getBytes()));
-            }
-            catch (ParserConfigurationException e)
-            {
-                throw new DiscoveryException("Parser configuration error",
-                        OpenIDException.XRDS_PARSING_ERROR, e);
-            }
-            catch (SAXParseException e)
-            {
-                String regex = "<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>";
-                attemptsLeft--;
-                if (attemptsLeft > 0 && input.matches(regex))
-                {
-                    input = input.replaceAll(regex, "00");
-                    if (DEBUG)
-                    {
-                        _log.debug("Invalid 'Expires' value. Correcting and retrying...");
-                    }
+            dbf.setAttribute(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
+            dbf.setAttribute(JAXP_SCHEMA_SOURCE, new Object[] {
+                Discovery.class.getResourceAsStream(XRD_SCHEMA),
+                Discovery.class.getResourceAsStream(XRDS_SCHEMA),
+            });
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            builder.setErrorHandler(new ErrorHandler() {
+                public void error(SAXParseException exception) throws SAXException {
+                    throw exception;
                 }
-                else
-                {
-                    throw new DiscoveryException("Error parsing XML document",
-                        OpenIDException.XRDS_PARSING_ERROR, e);
+
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    throw exception;
                 }
-            }
-            catch (SAXException e)
-            {
-                throw new DiscoveryException("Error parsing XML document",
-                        OpenIDException.XRDS_PARSING_ERROR, e);
-            }
-            catch (IOException e)
-            {
-                throw new DiscoveryException("Error reading XRDS document",
-                        OpenIDException.XRDS_DOWNLOAD_ERROR, e);
-            }
-            catch (RuntimeDiscoveryException rde)
-            {
-                throw new DiscoveryException(rde.getMessage());
-            }
+
+                public void warning(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+            });
+
+            builder.setEntityResolver(new EntityResolver() {
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    throw new RuntimeDiscoveryException("External entity found in XRDS data");
+                }
+            });
+
+            return builder.parse(new ByteArrayInputStream(input.getBytes()));
+        }
+        catch (ParserConfigurationException e)
+        {
+            throw new DiscoveryException("Parser configuration error",
+                    OpenIDException.XRDS_PARSING_ERROR, e);
+        }
+        catch (SAXException e)
+        {
+            throw new DiscoveryException("Error parsing XML document",
+                    OpenIDException.XRDS_PARSING_ERROR, e);
+        }
+        catch (IOException e)
+        {
+            throw new DiscoveryException("Error reading XRDS document",
+                    OpenIDException.XRDS_DOWNLOAD_ERROR, e);
+        }
+        catch (RuntimeDiscoveryException rde)
+        {
+            throw new DiscoveryException(rde.getMessage());
         }
     }
 
