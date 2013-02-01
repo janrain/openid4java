@@ -212,10 +212,11 @@ public class XrdsParserImpl implements XrdsParser
             }
             catch (SAXParseException e)
             {
+                String regex = "<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>";
                 attemptsLeft--;
-                if (attemptsLeft > 0)
+                if (attemptsLeft > 0 && input.matches(regex))
                 {
-                    input = input.replaceAll("<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>", "00");
+                    input = input.replaceAll(regex, "00");
                     if (DEBUG)
                     {
                         _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");

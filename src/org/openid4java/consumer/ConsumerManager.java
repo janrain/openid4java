@@ -617,7 +617,7 @@ public class ConsumerManager
             String postResponse = resp.getBody();
             response.copyOf(ParameterList.createFromKeyValueForm(postResponse));
 
-            if (DEBUG) _log.debug("Retrived response:\n" + postResponse);
+            if (DEBUG) _log.debug("Retrived response:\n" + responseCode + "\n" + postResponse);
         }
         catch (IOException e)
         {
