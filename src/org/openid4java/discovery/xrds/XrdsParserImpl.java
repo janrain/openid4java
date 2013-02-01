@@ -219,12 +219,7 @@ public class XrdsParserImpl implements XrdsParser
                     input = input.replaceAll(regex, "00");
                     if (DEBUG)
                     {
-                        _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        _log.debug("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        _log.debug("Input: \n" + input);
+                        _log.debug("Invalid 'Expires' value. Correcting and retrying...");
                     }
                 }
                 else
