@@ -155,10 +155,10 @@ public class XrdsParserImpl implements XrdsParser
     private Document parseXmlInput(String input) throws DiscoveryException
     {
 
-        String regex = "<Expires>\\d{4}-\\d{2}-\\d{2}T(0):\\d{2}:\\d{2}Z<\\/Expires>";
+        String regex = "<Expires>\\d{4}-\\d{2}-\\d{2}T()\\d:\\d{2}:\\d{2}Z<\\/Expires>";
         if (input.matches(regex))
         {
-            input = input.replaceAll(regex, "00");
+            input = input.replaceAll(regex, "0");
             if (DEBUG)
             {
                 _log.debug("Invalid 'Expires' value. Correcting...");
