@@ -170,6 +170,7 @@ public class XrdsParserImpl implements XrdsParser
 
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
+
         try
         {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
