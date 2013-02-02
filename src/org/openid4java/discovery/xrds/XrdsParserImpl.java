@@ -168,14 +168,6 @@ public class XrdsParserImpl implements XrdsParser
                 _log.debug("Invalid 'Expires' value. Correcting...");
             }
         }
-        else
-        {
-            if (DEBUG)
-            {
-                _log.debug("The 'Expires' value appears to be correct.");
-            }
-
-        }
 
         if (DEBUG)
             _log.debug("Parsing XRDS input: " + input);
