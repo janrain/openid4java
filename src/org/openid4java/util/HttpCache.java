@@ -8,15 +8,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -133,7 +138,9 @@ public class HttpCache extends AbstractHttpFetcher
             get.getParams().setParameter(AllClientPNames.HANDLE_REDIRECTS, Boolean.TRUE);
             HttpUtils.setRequestOptions(get, requestOptions);
 
-            httpResponse = _client.execute(get);
+            HttpContext context = new BasicHttpContext();
+
+            httpResponse = _client.execute(get, context);
             responseEntity = httpResponse.getEntity();
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             String statusLine = httpResponse.getStatusLine().getReasonPhrase();
@@ -141,8 +148,21 @@ public class HttpCache extends AbstractHttpFetcher
             ResponseBody body = getResponseBody(responseEntity,
                 requestOptions.getMaxBodySize());
 
+            String finalUri = null;
+            try
+            {
+                HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+                HttpHost currentHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+                finalUri = (currentReq.getURI().isAbsolute()) ?
+                        currentReq.getURI().toString() : (currentHost.toURI() + currentReq.getURI());
+            }
+            catch(NullPointerException e)
+            {
+                finalUri = get.getURI().toString();
+            }
+
             resp = new DefaultHttpResponse(statusCode, statusLine,
-                    requestOptions.getMaxRedirects(), get.getURI().toString(),
+                    requestOptions.getMaxRedirects(), finalUri,
                     httpResponse.getAllHeaders(), body.getBody());
             resp.setBodySizeExceeded(body.isBodyTruncated());
 
