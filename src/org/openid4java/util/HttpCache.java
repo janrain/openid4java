@@ -17,6 +17,8 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.AllClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -88,7 +90,8 @@ public class HttpCache extends AbstractHttpFetcher
                 getDefaultRequestOptions().getAllowCircularRedirects(),
                 getDefaultRequestOptions().getSocketTimeout(),
                 getDefaultRequestOptions().getConnTimeout(),
-                null, sslContext, hostnameVerifier);
+                CookiePolicy.BROWSER_COMPATIBILITY,
+                sslContext, hostnameVerifier);
     }
 
     /**
