@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.openid4java</groupId>
     <artifactId>openid4java-parent</artifactId>
-    <version>0.9.7-JANRAIN.9</version>
+    <version>0.9.7-JANRAIN.10</version>
   </parent>
   <artifactId>openid4java-consumer</artifactId>
   <packaging>pom</packaging>
@@ -27,6 +27,16 @@
     <dependency>
       <groupId>net.sourceforge.nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>serializer</artifactId>
+      <version>2.7.1</version>
     </dependency>
   </dependencies>
 </project>
